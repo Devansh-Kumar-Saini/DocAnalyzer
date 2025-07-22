@@ -8,7 +8,7 @@ export default function About() {
   const team = [
     {
       name: 'Devansh Kumar',
-      role: 'Lead AI Researcher',
+      role: 'AIML Developer',
       bio: 'Final Year B.Tech student at Amity University Punjab, specializing in machine learning',
       image: 'images/devansh.jpg'
     }
