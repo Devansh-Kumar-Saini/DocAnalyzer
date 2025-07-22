@@ -1,0 +1,78 @@
+import os
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+import pandas as pd
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+from gensim.corpora import Dictionary
+from gensim.models import LdaModel
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import io
+import base64
+
+app = FastAPI()
+
+# Ensure NLTK data
+for data in ['punkt', 'wordnet', 'stopwords']:
+    try:
+        nltk.data.find(f'tokenizers/{data}' if data == 'punkt' else f'corpora/{data}')
+    except LookupError:
+        nltk.download(data)
+
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+
+def preprocess_text(text):
+    tokens = word_tokenize(text.lower())
+    tokens = [lemmatizer.lemmatize(token) for token in tokens if token.isalpha() and token not in stop_words]
+    return tokens
+
+def generate_wordcloud(topic_words):
+    word_freq = {word: freq for word, freq in topic_words}
+    wordcloud = WordCloud(width=400, height=200, background_color='white').generate_from_frequencies(word_freq)
+    buf = io.BytesIO()
+    plt.figure(figsize=(4,2))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig(buf, format='png')
+    plt.close()
+    buf.seek(0)
+    img_bytes = buf.read()
+    img_b64 = base64.b64encode(img_bytes).decode('utf-8')
+    return img_b64
+
+@app.post("/api/analyze")
+async def analyze(files: list[UploadFile] = File(...)):
+    texts = []
+    for file in files:
+        content = await file.read()
+        texts.append(content.decode('utf-8', errors='ignore'))
+    df = pd.DataFrame({'text': texts})
+    df['tokens'] = df['text'].apply(preprocess_text)
+    dictionary = Dictionary(df['tokens'])
+    dictionary.filter_extremes(no_below=2, no_above=0.5)
+    corpus = [dictionary.doc2bow(text) for text in df['tokens']]
+    if len(corpus) == 0 or len(dictionary) == 0:
+        return JSONResponse({"error": "Not enough data for topic modeling."}, status_code=400)
+    lda_model = LdaModel(
+        corpus=corpus,
+        id2word=dictionary,
+        num_topics=3,
+        passes=5,
+        alpha='auto',
+        eta='auto',
+        random_state=42
+    )
+    topics = lda_model.show_topics(num_topics=3, num_words=10, formatted=False)
+    topic_results = []
+    for topic_id, topic_words in topics:
+        topic_results.append({
+            "topic_id": topic_id,
+            "words": [word for word, _ in topic_words],
+            "wordcloud": generate_wordcloud(topic_words)
+        })
+    return {"topics": topic_results}

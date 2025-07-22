@@ -32,15 +32,15 @@ export function useDocumentAnalysis() {
 
   const analyzeDocuments = async (files: File[]): Promise<void> => {
     setIsProcessing(true);
-    
+
     try {
       const formData = new FormData();
-      files.forEach((file, index) => {
-        formData.append(`file_${index}`, file);
+      files.forEach((file) => {
+        formData.append('files', file);
       });
 
-      // This would connect to your Python backend
-      const response = await fetch('/api/analyze', {
+      // Connect to FastAPI backend
+      const response = await fetch('http://localhost:8000/api/analyze', {
         method: 'POST',
         body: formData,
       });
@@ -49,16 +49,30 @@ export function useDocumentAnalysis() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data: AnalysisResponse = await response.json();
-      setResults(data.documents);
-      
+      const data = await response.json();
+
+      // Map backend topics to DocumentAnalysis structure
+      const results: DocumentAnalysis[] = files.map((file, idx) => ({
+        filename: file.name,
+        wordCount: 0, // Not provided by backend
+        topics: (data.topics || []).map((topic: any) => ({
+          id: topic.topic_id,
+          keywords: topic.words,
+          weight: 0, // Not provided by backend
+          documents: [file.name],
+        })),
+        summary: `Top topics: ${(data.topics || []).map((t: any) => t.words.slice(0, 3).join(', ')).join('; ')}`,
+      }));
+
+      setResults(results);
+
       toast({
         title: "Analysis Complete",
         description: `Successfully analyzed ${files.length} document(s)`,
       });
     } catch (error) {
       console.error('Analysis failed:', error);
-      
+
       // For demo purposes, generate mock data
       const mockResults: DocumentAnalysis[] = files.map((file, index) => ({
         filename: file.name,

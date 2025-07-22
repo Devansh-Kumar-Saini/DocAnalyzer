@@ -7,22 +7,10 @@ import { Badge } from '@/components/ui/badge';
 export default function About() {
   const team = [
     {
-      name: 'Dr. Sarah Chen',
+      name: 'Devansh Kumar',
       role: 'Lead AI Researcher',
-      bio: 'PhD in Machine Learning with 8+ years in NLP research. Former Google AI researcher.',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
-    },
-    {
-      name: 'Marcus Rodriguez',
-      role: 'Full Stack Developer',
-      bio: 'Expert in React and Python with passion for creating intuitive user experiences.',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
-    },
-    {
-      name: 'Elena Vasquez',
-      role: 'Data Scientist',
-      bio: 'Specialist in topic modeling and text analytics with background in computational linguistics.',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
+      bio: 'Final Year B.Tech student at Amity University Punjab, specializing in machine learning',
+      image: 'images/devansh.jpg'
     }
   ];
 
@@ -143,37 +131,39 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* Team Section - Centered */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Meet Our Team</h2>
+            <h2 className="text-3xl font-bold mb-4">Presented By</h2>
             <p className="text-xl text-muted-foreground">
               The experts behind DocAnalyzer's cutting-edge technology
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="text-center">
-                <CardHeader>
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <CardTitle className="text-xl">{member.name}</CardTitle>
-                  <CardDescription className="text-primary font-medium">
-                    {member.role}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {member.bio}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex justify-center">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-8 max-w-5xl">
+              {team.map((member, index) => (
+                <Card key={index} className="text-center">
+                  <CardHeader>
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                    />
+                    <CardTitle className="text-xl">{member.name}</CardTitle>
+                    <CardDescription className="text-primary font-medium">
+                      {member.role}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      {member.bio}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -187,18 +177,24 @@ export default function About() {
           </p>
           
           <div className="flex justify-center space-x-4">
+            <a href="mailto:devanshkumarsaini@gmail.com" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" className="flex items-center">
               <Mail className="h-4 w-4 mr-2" />
               Email Us
             </Button>
+            </a>
+            <a href="https://github.com/Devansh-Kumar-Saini" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" className="flex items-center">
               <Github className="h-4 w-4 mr-2" />
               GitHub
             </Button>
+            </a>
+            <a href="https://www.linkedin.com/in/devansh-kumar-b2b972261/" target="_blank" rel="noopener noreferrer">            
             <Button variant="outline" className="flex items-center">
               <Linkedin className="h-4 w-4 mr-2" />
               LinkedIn
             </Button>
+            </a>
           </div>
         </div>
       </section>

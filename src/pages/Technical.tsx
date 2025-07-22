@@ -175,9 +175,6 @@ export default function Technical() {
                           <h3 className="text-lg font-semibold mb-2">{stage.title}</h3>
                           <p className="text-muted-foreground">{stage.description}</p>
                         </div>
-                        {index < pipeline.length - 1 && (
-                          <ArrowRight className="h-5 w-5 text-muted-foreground mt-1" />
-                        )}
                       </div>
                     </CardContent>
                   </Card>
