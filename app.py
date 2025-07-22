@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from fastapi.middleware.cors import CORSMiddleware
+from textblob import TextBlob
+import spacy
 
 app = FastAPI()
 
@@ -34,6 +36,7 @@ for data in ['punkt', 'wordnet', 'stopwords']:
 
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
+nlp = spacy.load("en_core_web_sm")
 
 def preprocess_text(text):
     tokens = word_tokenize(text.lower())
@@ -54,6 +57,21 @@ def generate_wordcloud(topic_words):
     img_bytes = buf.read()
     img_b64 = base64.b64encode(img_bytes).decode('utf-8')
     return img_b64
+
+def analyze_sentiment(text):
+    blob = TextBlob(text)
+    polarity = blob.sentiment.polarity
+    if polarity > 0.1:
+        label = "Positive"
+    elif polarity < -0.1:
+        label = "Negative"
+    else:
+        label = "Neutral"
+    return {"score": polarity, "label": label}
+
+def extract_entities(text):
+    doc = nlp(text)
+    return [ent.text for ent in doc.ents]
 
 @app.post("/api/analyze")
 async def analyze(files: list[UploadFile] = File(...)):
@@ -86,4 +104,11 @@ async def analyze(files: list[UploadFile] = File(...)):
             "words": [word for word, _ in topic_words],
             "wordcloud": generate_wordcloud(topic_words)
         })
-    return {"topics": topic_results}
+    sentiment_results = []
+    entity_results = []
+    for i, text in enumerate(texts):
+        sentiment = analyze_sentiment(text)
+        entities = extract_entities(text)
+        sentiment_results.append(sentiment)
+        entity_results.append(entities)
+    return {"topics": topic_results, "sentiments": sentiment_results, "entities": entity_results}
