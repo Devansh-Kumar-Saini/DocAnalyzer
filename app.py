@@ -12,8 +12,18 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import io
 import base64
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Ensure NLTK data
 for data in ['punkt', 'wordnet', 'stopwords']:
@@ -50,11 +60,12 @@ async def analyze(files: list[UploadFile] = File(...)):
     texts = []
     for file in files:
         content = await file.read()
+        print("Received file:", file.filename, "Size:", len(content))
         texts.append(content.decode('utf-8', errors='ignore'))
     df = pd.DataFrame({'text': texts})
     df['tokens'] = df['text'].apply(preprocess_text)
     dictionary = Dictionary(df['tokens'])
-    dictionary.filter_extremes(no_below=2, no_above=0.5)
+    dictionary.filter_extremes(no_below=1, no_above=1.0)
     corpus = [dictionary.doc2bow(text) for text in df['tokens']]
     if len(corpus) == 0 or len(dictionary) == 0:
         return JSONResponse({"error": "Not enough data for topic modeling."}, status_code=400)
