@@ -76,6 +76,12 @@ The backend will start on `http://localhost:8000`.
 3. **Explore Results:** View topics, sentiment, and download reports.
 
 ---
+## ⚡ Quick Test (No UI)
+
+If you only want to test the code functionality without using the UI, simply run the [`Code.ipynb`](./Code.ipynb) Jupyter notebook.  
+This notebook demonstrates topic modeling and analysis on the 20 Newsgroups dataset using Python.
+
+---
 
 ## 📂 Project Structure
 
