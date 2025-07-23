@@ -33,8 +33,9 @@ export default function Demo() {
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              <strong>Demo Mode:</strong> This frontend connects to your Python backend via the <code>/api/analyze</code> endpoint. 
-              Without a backend, mock data will be displayed to demonstrate the interface.
+              <strong>Demo Mode:</strong> This frontend connects to your Python backend via the <code>/api/analyze</code> endpoint.  
+              If the backend is not properly connected, the app will switch to demo mode and display mock data.  
+              Please note that values shown in demo mode may be inaccurate or misleading.
             </AlertDescription>
           </Alert>
         </div>
