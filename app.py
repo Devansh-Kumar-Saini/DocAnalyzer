@@ -6,6 +6,8 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+# import gensim #
+# from gensim import corpora #
 from gensim.corpora import Dictionary
 from gensim.models import LdaModel
 from wordcloud import WordCloud
